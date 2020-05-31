@@ -26,7 +26,7 @@ build:
   # LINK : fatal error LNK1102: out of memory
   # fatal error C1060: compiler is out of heap space
   skip: True  # [win]
-  number: 0
+  number: 1
   detect_binary_files_with_prefix: False
   missing_dso_whitelist:          # [osx]
     - /usr/lib/libresolv.9.dylib  # [osx]
