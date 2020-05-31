@@ -17,7 +17,7 @@ cxx_compiler:
 cxx_compiler_version:
 - '9'
 icu:
-- '64.2'
+- '67'
 libcurl:
 - '7'
 macos_machine:
