@@ -1,4 +1,10 @@
 #!/bin/bash
+set -x
+
+# https://jira.mongodb.org/browse/SERVER-30893
+if [[ $target_platform == linux-aarch64 ]]; then
+   export CFLAGS="${CFLAGS:-} -march=armv8-a+crc"
+fi
 
 declare -a _scons_xtra_flags
 _scons_xtra_flags+=(--dbg=off)
