@@ -26,13 +26,10 @@ build:
   # LINK : fatal error LNK1102: out of memory
   # fatal error C1060: compiler is out of heap space
   skip: true  # [win]
-  number: 0
+  number: 1
   detect_binary_files_with_prefix: false
   missing_dso_whitelist:   # [osx]
     - /usr/lib/libresolv.9.dylib  # [osx]
-  ignore_run_exports:
-    # No shared libraries, statically linked
-    - abseil-cpp
 
 requirements:
   build:
