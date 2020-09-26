@@ -1,17 +1,18 @@
-From d17f1c5f0a4c636eb411a9dbaf659886bcc97616 Mon Sep 17 00:00:00 2001
+From e074d337d81f8cebc9b30731bdf312daa48b2c11 Mon Sep 17 00:00:00 2001
 From: Nehal J Wani <nehaljw.kkd1@gmail.com>
-Date: Sat, 26 Sep 2020 16:05:30 -0400
-Subject: [PATCH 13/13] MSVC: Don't generating debug info forcefully
+Date: Sat, 26 Sep 2020 19:25:32 -0400
+Subject: [PATCH 13/14] MSVC: Don't generating debug info forcefully
 
 ---
- SConstruct | 30 +++++++++++++++---------------
- 1 file changed, 15 insertions(+), 15 deletions(-)
+ SConstruct                              | 26 ++++++++++++-------------
+ site_scons/site_tools/separate_debug.py |  6 +++---
+ 2 files changed, 16 insertions(+), 16 deletions(-)
 
 diff --git a/SConstruct b/SConstruct
-index b7e7a67e..67a9bbfe 100644
+index d8d8e82ee6..7b00a94839 100644
 --- a/SConstruct
 +++ b/SConstruct
-@@ -1753,19 +1753,19 @@ elif env.TargetOSIs('windows'):
+@@ -1901,11 +1901,11 @@ elif env.TargetOSIs('windows'):
      # Don't send error reports in case of internal compiler error
      env.Append( CCFLAGS= ["/errorReport:none"] )
  
@@ -20,41 +21,61 @@ index b7e7a67e..67a9bbfe 100644
 -        env['CCPDBFLAGS'] = "/Z7"
 -    elif get_option('msvc-debugging-format') == "pdb":
 -        env['CCPDBFLAGS'] = '/Zi /Fd${TARGET}.pdb'
--
--    # /DEBUG will tell the linker to create a .pdb file
--    # which WinDbg and Visual Studio will use to resolve
--    # symbols if you want to debug a release-mode image.
--    # Note that this means we can't do parallel links in the build.
--    #
--    # Please also note that this has nothing to do with _DEBUG or optimization.
--    env.Append( LINKFLAGS=["/DEBUG"] )
 +    # # Select debugging format. /Zi gives faster links but seem to use more memory
 +    # if get_option('msvc-debugging-format') == "codeview":
 +    #     env['CCPDBFLAGS'] = "/Z7"
 +    # elif get_option('msvc-debugging-format') == "pdb":
 +    #     env['CCPDBFLAGS'] = '/Zi /Fd${TARGET}.pdb'
-+
-+    # # /DEBUG will tell the linker to create a .pdb file
-+    # # which WinDbg and Visual Studio will use to resolve
-+    # # symbols if you want to debug a release-mode image.
-+    # # Note that this means we can't do parallel links in the build.
-+    # #
-+    # # Please also note that this has nothing to do with _DEBUG or optimization.
-+    # env.Append( LINKFLAGS=["/DEBUG"] )
+ 
+ 
+     # The SCons built-in pdbGenerator always adds /DEBUG, but we would like
+@@ -1925,11 +1925,11 @@ elif env.TargetOSIs('windows'):
+     #
+     # Please also note that this has nothing to do with _DEBUG or optimization.
+ 
+-    # If the user set a /DEBUG flag explicitly, don't add
+-    # another. Otherwise use the standard /DEBUG flag, since we always
+-    # want PDBs.
+-    if not any(flag.startswith('/DEBUG') for flag in env['LINKFLAGS']):
+-        env.Append(LINKFLAGS=["/DEBUG"])
++    # # If the user set a /DEBUG flag explicitly, don't add
++    # # another. Otherwise use the standard /DEBUG flag, since we always
++    # # want PDBs.
++    # if not any(flag.startswith('/DEBUG') for flag in env['LINKFLAGS']):
++    #     env.Append(LINKFLAGS=["/DEBUG"])
  
      # /MD:  use the multithreaded, DLL version of the run-time library (MSVCRT.lib/MSVCR###.DLL)
      # /MDd: Defines _DEBUG, _MT, _DLL, and uses MSVCRTD.lib/MSVCRD###.DLL
-@@ -1837,8 +1837,8 @@ elif env.TargetOSIs('windows'):
+@@ -2000,9 +2000,9 @@ elif env.TargetOSIs('windows'):
+         ],
      )
  
- # When building on visual studio, this sets the name of the debug symbols file
+-# When building on visual studio, this sets the name of the debug symbols file
 -if env.ToolchainIs('msvc'):
 -    env['PDB'] = '${TARGET.base}.pdb'
++# # When building on visual studio, this sets the name of the debug symbols file
 +# if env.ToolchainIs('msvc'):
-+#    env['PDB'] = '${TARGET.base}.pdb'
++#     env['PDB'] = '${TARGET.base}.pdb'
  
- if env.TargetOSIs('posix'):
+ # Python uses APPDATA to determine the location of user installed
+ # site-packages. If we do not pass this variable down to Python
+diff --git a/site_scons/site_tools/separate_debug.py b/site_scons/site_tools/separate_debug.py
+index 6ca510b039..aad3c39a9e 100644
+--- a/site_scons/site_tools/separate_debug.py
++++ b/site_scons/site_tools/separate_debug.py
+@@ -114,9 +114,9 @@ def _update_builder(env, builder):
+         elif env.TargetOSIs("posix"):
+             debug_file = env.File(str(target[0]) + ".debug")
+             debug_files.append(debug_file)
+-        elif env.TargetOSIs("windows"):
+-            debug_file = env.File(env.subst("${PDB}", target=target))
+-            debug_files.append(debug_file)
++        # elif env.TargetOSIs("windows"):
++        #     debug_file = env.File(env.subst("${PDB}", target=target))
++        #     debug_files.append(debug_file)
+         else:
+             pass
  
 -- 
-2.26.2
+2.17.1
 
