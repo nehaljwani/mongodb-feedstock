@@ -20,12 +20,9 @@ source:
     - patches/0010-Fix-openssl-1.1.x-library-names-on-Windows.patch
     - patches/0011-Fix-icu-library-names-for-Windows.patch
     - patches/0012-Don-t-force-disable-auto-linking-if-use-system-boost.patch
+    - patches/0013-MSVC-Don-t-generating-debug-info-forcefully.patch
 
 build:
-  # Skipping on Windows because azure ain't got what it takes
-  # LINK : fatal error LNK1102: out of memory
-  # fatal error C1060: compiler is out of heap space
-  skip: true  # [win]
   number: 1
   detect_binary_files_with_prefix: false
   missing_dso_whitelist:   # [osx]
@@ -36,6 +33,7 @@ requirements:
     - {{ compiler('c') }}
     - {{ compiler('cxx') }}
     - python 3.*
+    - pywin32  # [win]
     - cheetah3
     - psutil
     - pyyaml

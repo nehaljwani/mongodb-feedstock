@@ -1,0 +1,60 @@
+From d17f1c5f0a4c636eb411a9dbaf659886bcc97616 Mon Sep 17 00:00:00 2001
+From: Nehal J Wani <nehaljw.kkd1@gmail.com>
+Date: Sat, 26 Sep 2020 16:05:30 -0400
+Subject: [PATCH 13/13] MSVC: Don't generating debug info forcefully
+
+---
+ SConstruct | 30 +++++++++++++++---------------
+ 1 file changed, 15 insertions(+), 15 deletions(-)
+
+diff --git a/SConstruct b/SConstruct
+index b7e7a67e..67a9bbfe 100644
+--- a/SConstruct
++++ b/SConstruct
+@@ -1753,19 +1753,19 @@ elif env.TargetOSIs('windows'):
+     # Don't send error reports in case of internal compiler error
+     env.Append( CCFLAGS= ["/errorReport:none"] )
+ 
+-    # Select debugging format. /Zi gives faster links but seem to use more memory
+-    if get_option('msvc-debugging-format') == "codeview":
+-        env['CCPDBFLAGS'] = "/Z7"
+-    elif get_option('msvc-debugging-format') == "pdb":
+-        env['CCPDBFLAGS'] = '/Zi /Fd${TARGET}.pdb'
+-
+-    # /DEBUG will tell the linker to create a .pdb file
+-    # which WinDbg and Visual Studio will use to resolve
+-    # symbols if you want to debug a release-mode image.
+-    # Note that this means we can't do parallel links in the build.
+-    #
+-    # Please also note that this has nothing to do with _DEBUG or optimization.
+-    env.Append( LINKFLAGS=["/DEBUG"] )
++    # # Select debugging format. /Zi gives faster links but seem to use more memory
++    # if get_option('msvc-debugging-format') == "codeview":
++    #     env['CCPDBFLAGS'] = "/Z7"
++    # elif get_option('msvc-debugging-format') == "pdb":
++    #     env['CCPDBFLAGS'] = '/Zi /Fd${TARGET}.pdb'
++
++    # # /DEBUG will tell the linker to create a .pdb file
++    # # which WinDbg and Visual Studio will use to resolve
++    # # symbols if you want to debug a release-mode image.
++    # # Note that this means we can't do parallel links in the build.
++    # #
++    # # Please also note that this has nothing to do with _DEBUG or optimization.
++    # env.Append( LINKFLAGS=["/DEBUG"] )
+ 
+     # /MD:  use the multithreaded, DLL version of the run-time library (MSVCRT.lib/MSVCR###.DLL)
+     # /MDd: Defines _DEBUG, _MT, _DLL, and uses MSVCRTD.lib/MSVCRD###.DLL
+@@ -1837,8 +1837,8 @@ elif env.TargetOSIs('windows'):
+     )
+ 
+ # When building on visual studio, this sets the name of the debug symbols file
+-if env.ToolchainIs('msvc'):
+-    env['PDB'] = '${TARGET.base}.pdb'
++# if env.ToolchainIs('msvc'):
++#    env['PDB'] = '${TARGET.base}.pdb'
+ 
+ if env.TargetOSIs('posix'):
+ 
+-- 
+2.26.2
+
